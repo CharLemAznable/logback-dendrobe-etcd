@@ -12,7 +12,6 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,7 +27,6 @@ import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.VERTX_O
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Slf4j
 public class VertxAppenderTest implements EtcdUpdaterListener, VertxManagerListener {
 
     private static final String CLASS_NAME = VertxAppenderTest.class.getName();
@@ -43,6 +41,7 @@ public class VertxAppenderTest implements EtcdUpdaterListener, VertxManagerListe
 
     @BeforeAll
     public static void beforeAll() {
+        EtcdConfigService.setUpTestMode();
         val vertxOptions = new VertxOptions();
         vertxOptions.setWorkerPoolSize(10);
         val hazelcastConfig = new Config();
@@ -65,11 +64,11 @@ public class VertxAppenderTest implements EtcdUpdaterListener, VertxManagerListe
     @AfterAll
     public static void afterAll() {
         VertxElf.closeVertx(vertx);
+        EtcdConfigService.tearDownTestMode();
     }
 
     @Test
     public void testVertxAppender() {
-        EtcdConfigService.setUpTestMode();
         EtcdUpdater.addListener(this);
         VertxManager.addListener(this);
 
@@ -104,7 +103,6 @@ public class VertxAppenderTest implements EtcdUpdaterListener, VertxManagerListe
 
         VertxManager.removeListener(this);
         EtcdUpdater.removeListener(this);
-        EtcdConfigService.tearDownTestMode();
     }
 
     @Override

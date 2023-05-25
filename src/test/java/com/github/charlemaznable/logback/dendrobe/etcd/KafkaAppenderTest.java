@@ -4,7 +4,6 @@ import com.github.charlemaznable.etcdconf.EtcdConfigService;
 import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
 import com.github.charlemaznable.logback.dendrobe.kafka.KafkaClientManager;
 import com.github.charlemaznable.logback.dendrobe.kafka.KafkaClientManagerListener;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -33,7 +32,6 @@ import static com.github.charlemaznable.core.kafka.KafkaConfigElf.KAFKA_CONFIG_D
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Slf4j
 public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManagerListener {
 
     private static final String CLASS_NAME = KafkaAppenderTest.class.getName();
@@ -53,6 +51,7 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
 
     @BeforeAll
     public static void beforeAll() {
+        EtcdConfigService.setUpTestMode();
         kafka.start();
         val bootstrapServers = kafka.getBootstrapServers();
 
@@ -78,11 +77,11 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
         kafkaProducer.close();
         kafkaConsumer.close();
         kafka.stop();
+        EtcdConfigService.tearDownTestMode();
     }
 
     @Test
     public void testKafkaAppender() {
-        EtcdConfigService.setUpTestMode();
         EtcdUpdater.addListener(this);
         KafkaClientManager.addListener(this);
 
@@ -106,7 +105,6 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
 
         KafkaClientManager.removeListener(this);
         EtcdUpdater.removeListener(this);
-        EtcdConfigService.tearDownTestMode();
     }
 
     @SuppressWarnings({"unchecked", "SameParameterValue"})

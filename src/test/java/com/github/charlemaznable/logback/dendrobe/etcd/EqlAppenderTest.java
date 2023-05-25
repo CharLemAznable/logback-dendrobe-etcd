@@ -1,17 +1,16 @@
 package com.github.charlemaznable.logback.dendrobe.etcd;
 
+import com.github.charlemaznable.eql.etcd.Etql;
 import com.github.charlemaznable.etcdconf.EtcdConfigService;
 import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
 import com.github.charlemaznable.logback.dendrobe.etcd.log.ErrorLog;
 import com.github.charlemaznable.logback.dendrobe.etcd.log.NotLog;
 import com.github.charlemaznable.logback.dendrobe.etcd.log.SimpleLog;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.n3r.eql.diamond.Dql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.MySQLContainer;
@@ -25,7 +24,6 @@ import java.util.Properties;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Slf4j
 public class EqlAppenderTest implements EtcdUpdaterListener {
 
     private static final String CLASS_NAME = EqlAppenderTest.class.getName();
@@ -59,7 +57,7 @@ public class EqlAppenderTest implements EtcdUpdaterListener {
                 "user=" + mysql0.getUsername() + "\n" +
                 "password=" + mysql0.getPassword() + "\n");
 
-        new Dql(DB0).execute(CREATE_TABLE_SIMPLE_LOG);
+        new Etql(DB0).execute(CREATE_TABLE_SIMPLE_LOG);
 
         root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         self = LoggerFactory.getLogger(EqlAppenderTest.class);
@@ -116,11 +114,11 @@ public class EqlAppenderTest implements EtcdUpdaterListener {
         self.info("simple log: {}", simpleLog);
 
         await().timeout(Duration.ofSeconds(30)).pollDelay(Duration.ofSeconds(3)).until(() -> {
-            List<Object> simpleLogs = new Dql(DB0).execute(SELECT_SIMPLE_LOGS);
+            List<Object> simpleLogs = new Etql(DB0).execute(SELECT_SIMPLE_LOGS);
             return 4 == simpleLogs.size();
         });
 
-        List<SimpleLog> simpleLogs = new Dql(DB0).returnType(SimpleLog.class)
+        List<SimpleLog> simpleLogs = new Etql(DB0).returnType(SimpleLog.class)
                 .execute(SELECT_SIMPLE_LOGS);
 
         val querySimpleLog = simpleLogs.get(0);

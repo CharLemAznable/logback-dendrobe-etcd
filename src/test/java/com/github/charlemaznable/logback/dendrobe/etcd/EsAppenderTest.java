@@ -10,7 +10,6 @@ import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
 import com.github.charlemaznable.logback.dendrobe.es.EsClientManager;
 import com.github.charlemaznable.logback.dendrobe.es.EsClientManagerListener;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Slf4j
 public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListener {
 
     private static final String CLASS_NAME = EsAppenderTest.class.getName();
@@ -61,6 +59,7 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
     @SneakyThrows
     @BeforeAll
     public static void beforeAll() {
+        EtcdConfigService.setUpTestMode();
         elasticsearch.start();
 
         val esConfig = new EsConfig();
@@ -82,11 +81,11 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
     public static void afterAll() {
         closeElasticsearchApiClient(esClient);
         elasticsearch.stop();
+        EtcdConfigService.tearDownTestMode();
     }
 
     @Test
     public void testEsAppender() {
-        EtcdConfigService.setUpTestMode();
         EtcdUpdater.addListener(this);
         EsClientManager.addListener(this);
 
@@ -112,7 +111,6 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
 
         EsClientManager.removeListener(this);
         EtcdUpdater.removeListener(this);
-        EtcdConfigService.tearDownTestMode();
     }
 
     @SuppressWarnings({"unchecked", "SameParameterValue"})
