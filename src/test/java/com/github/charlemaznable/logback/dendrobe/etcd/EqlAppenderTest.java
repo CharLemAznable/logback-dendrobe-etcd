@@ -41,16 +41,17 @@ public class EqlAppenderTest implements EtcdUpdaterListener {
     private static final String SELECT_SIMPLE_LOGS = "" +
             "select log_id, log_content, log_date, log_date_time from simple_log order by log_id";
     private static final DockerImageName mysqlImageName = DockerImageName.parse("mysql:5.7.34");
-    private static final MySQLContainer<?> mysql0 = new MySQLContainer<>(mysqlImageName).withDatabaseName(DB0);
+    private static MySQLContainer<?> mysql0;
     private static Logger root;
     private static Logger self;
     private boolean updated;
 
     @BeforeAll
     public static void beforeAll() {
+        EtcdConfigService.setUpTestMode();
+        mysql0 = new MySQLContainer<>(mysqlImageName).withDatabaseName(DB0);
         mysql0.start();
 
-        EtcdConfigService.setUpTestMode();
         EmbeddedEtcdCluster.addOrModifyProperty("EqlConfig", DB0, "" +
                 "driver=com.mysql.cj.jdbc.Driver\n" +
                 "url=" + mysql0.getJdbcUrl() + "\n" +

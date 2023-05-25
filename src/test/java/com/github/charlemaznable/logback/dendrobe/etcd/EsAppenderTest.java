@@ -44,9 +44,7 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
     private static final String ELASTICSEARCH_USERNAME = "elastic";
     private static final String ELASTICSEARCH_PASSWORD = "changeme";
 
-    private static final ElasticsearchContainer elasticsearch
-            = new ElasticsearchContainer(ELASTICSEARCH_IMAGE)
-            .withPassword(ELASTICSEARCH_PASSWORD);
+    private static ElasticsearchContainer elasticsearch;
 
     private static ElasticsearchClient esClient;
 
@@ -60,6 +58,8 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
     @BeforeAll
     public static void beforeAll() {
         EtcdConfigService.setUpTestMode();
+        elasticsearch = new ElasticsearchContainer(ELASTICSEARCH_IMAGE)
+                .withPassword(ELASTICSEARCH_PASSWORD);
         elasticsearch.start();
 
         val esConfig = new EsConfig();

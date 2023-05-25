@@ -38,7 +38,7 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
 
     private static final DockerImageName KAFKA_IMAGE = DockerImageName.parse("confluentinc/cp-kafka:6.2.1");
 
-    static KafkaContainer kafka = new KafkaContainer(KAFKA_IMAGE);
+    static KafkaContainer kafka;
 
     private static KafkaProducer<String, String> kafkaProducer;
     private static KafkaConsumer<String, String> kafkaConsumer;
@@ -52,6 +52,7 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
     @BeforeAll
     public static void beforeAll() {
         EtcdConfigService.setUpTestMode();
+        kafka = new KafkaContainer(KAFKA_IMAGE);
         kafka.start();
         val bootstrapServers = kafka.getBootstrapServers();
 
