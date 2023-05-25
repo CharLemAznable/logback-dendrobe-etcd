@@ -28,7 +28,7 @@ import java.util.Properties;
 import static com.github.charlemaznable.core.codec.Json.unJson;
 import static com.github.charlemaznable.core.kafka.KafkaClientElf.buildConsumer;
 import static com.github.charlemaznable.core.kafka.KafkaClientElf.buildProducer;
-import static com.github.charlemaznable.core.kafka.KafkaConfigElf.KAFKA_CONFIG_DIAMOND_GROUP_NAME;
+import static com.github.charlemaznable.core.kafka.KafkaConfigElf.KAFKA_CONFIG_ETCD_NAMESPACE;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -67,7 +67,7 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
         consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         kafkaConsumer = buildConsumer(consumerConfig);
-        kafkaConsumer.assign(Collections.singleton(new TopicPartition("logback.diamond", 0)));
+        kafkaConsumer.assign(Collections.singleton(new TopicPartition("logback.etcd", 0)));
 
         root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         self = LoggerFactory.getLogger(KafkaAppenderTest.class);
@@ -88,14 +88,14 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
 
         updated = false;
         configured = false;
-        EmbeddedEtcdCluster.addOrModifyProperty(KAFKA_CONFIG_DIAMOND_GROUP_NAME, "DEFAULT",
+        EmbeddedEtcdCluster.addOrModifyProperty(KAFKA_CONFIG_ETCD_NAMESPACE, "DEFAULT",
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG + "=" + kafka.getBootstrapServers() + "\n");
         EmbeddedEtcdCluster.addOrModifyProperty("Logback", "test", "" +
                 "root[console.level]=info\n" +
                 CLASS_NAME + "[appenders]=[kafka]\n" +
                 CLASS_NAME + "[kafka.level]=info\n" +
                 CLASS_NAME + "[kafka.name]=DEFAULT\n" +
-                CLASS_NAME + "[kafka.topic]=logback.diamond\n");
+                CLASS_NAME + "[kafka.topic]=logback.etcd\n");
         await().forever().until(() -> updated);
         await().forever().until(() -> configured);
 

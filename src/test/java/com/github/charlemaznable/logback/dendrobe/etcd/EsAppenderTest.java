@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import static com.github.charlemaznable.core.es.EsClientElf.buildElasticsearchClient;
 import static com.github.charlemaznable.core.es.EsClientElf.closeElasticsearchApiClient;
-import static com.github.charlemaznable.core.es.EsConfigElf.ES_CONFIG_DIAMOND_GROUP_NAME;
+import static com.github.charlemaznable.core.es.EsConfigElf.ES_CONFIG_ETCD_NAMESPACE;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,9 +68,9 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
         esConfig.setPassword(ELASTICSEARCH_PASSWORD);
         esClient = buildElasticsearchClient(esConfig);
 
-        val createIndexRequest = CreateIndexRequest.of(builder -> builder.index("logback.diamond"));
+        val createIndexRequest = CreateIndexRequest.of(builder -> builder.index("logback.etcd"));
         val createIndexResponse = esClient.indices().create(createIndexRequest);
-        val openIndexRequest = OpenRequest.of(builder -> builder.index("logback.diamond"));
+        val openIndexRequest = OpenRequest.of(builder -> builder.index("logback.etcd"));
         val openIndexResponse = esClient.indices().open(openIndexRequest);
 
         root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -91,7 +91,7 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
 
         updated = false;
         configured = false;
-        EmbeddedEtcdCluster.addOrModifyProperty(ES_CONFIG_DIAMOND_GROUP_NAME, "DEFAULT", "" +
+        EmbeddedEtcdCluster.addOrModifyProperty(ES_CONFIG_ETCD_NAMESPACE, "DEFAULT", "" +
                 "uris=" + elasticsearch.getHttpHostAddress() + "\n" +
                 "username=" + ELASTICSEARCH_USERNAME + "\n" +
                 "password=" + ELASTICSEARCH_PASSWORD + "\n");
@@ -100,7 +100,7 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
                 CLASS_NAME + "[appenders]=[es]\n" +
                 CLASS_NAME + "[es.level]=info\n" +
                 CLASS_NAME + "[es.name]=DEFAULT\n" +
-                CLASS_NAME + "[es.index]=logback.diamond\n");
+                CLASS_NAME + "[es.index]=logback.etcd\n");
         await().forever().until(() -> updated);
         await().forever().until(() -> configured);
 
@@ -117,7 +117,7 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
     @SneakyThrows
     private void assertSearchContent(String content) {
         val searchRequest = SearchRequest.of(builder ->
-                builder.index("logback.diamond").query(queryBuilder ->
+                builder.index("logback.etcd").query(queryBuilder ->
                         queryBuilder.matchPhrase(phrase ->
                                 phrase.field("event.message").query(content)
                         )

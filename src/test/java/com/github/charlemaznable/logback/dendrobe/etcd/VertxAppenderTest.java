@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.Properties;
 
-import static com.github.charlemaznable.core.vertx.VertxClusterConfigElf.VERTX_CLUSTER_CONFIG_DIAMOND_GROUP_NAME;
-import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.VERTX_OPTIONS_DIAMOND_GROUP_NAME;
+import static com.github.charlemaznable.core.vertx.VertxClusterConfigElf.VERTX_CLUSTER_CONFIG_ETCD_NAMESPACE;
+import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.VERTX_OPTIONS_ETCD_NAMESPACE;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -48,7 +48,7 @@ public class VertxAppenderTest implements EtcdUpdaterListener, VertxManagerListe
         hazelcastConfig.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(true);
         vertxOptions.setClusterManager(new HazelcastClusterManager(hazelcastConfig));
         vertx = VertxElf.buildVertx(vertxOptions);
-        vertx.eventBus().consumer("logback.diamond",
+        vertx.eventBus().consumer("logback.etcd",
                 (Handler<Message<JsonObject>>) event -> {
                     try {
                         lastEventMessage = event.body().getJsonObject("event").getString("message");
@@ -74,23 +74,23 @@ public class VertxAppenderTest implements EtcdUpdaterListener, VertxManagerListe
 
         updated = false;
         configured = false;
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_CLUSTER_CONFIG_DIAMOND_GROUP_NAME, "DEFAULT", """
+        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_CLUSTER_CONFIG_ETCD_NAMESPACE, "DEFAULT", """
                 hazelcast:
                   network:
                     join:
                       multicast:
                         enabled: true
                 """);
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_DIAMOND_GROUP_NAME, "DEFAULT", """
+        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "DEFAULT", """
                 workerPoolSize=42
-                clusterManager=@com.github.charlemaznable.core.vertx.cluster.impl.DiamondHazelcastClusterManager(DEFAULT)
+                clusterManager=@com.github.charlemaznable.core.vertx.cluster.impl.EtcdHazelcastClusterManager(DEFAULT)
                 """);
         EmbeddedEtcdCluster.addOrModifyProperty("Logback", "test", "" +
                 "root[console.level]=info\n" +
                 CLASS_NAME + "[appenders]=[vertx]\n" +
                 CLASS_NAME + "[vertx.level]=info\n" +
                 CLASS_NAME + "[vertx.name]=DEFAULT\n" +
-                CLASS_NAME + "[vertx.address]=logback.diamond\n" +
+                CLASS_NAME + "[vertx.address]=logback.etcd\n" +
                 CLASS_NAME + "[console.level]=off\n" +
                 CLASS_NAME + "[eql.level]=off\n");
         await().forever().until(() -> updated);
