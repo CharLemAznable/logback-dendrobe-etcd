@@ -5,7 +5,6 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.elasticsearch.indices.OpenRequest;
 import com.github.charlemaznable.core.es.EsConfig;
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
 import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
 import com.github.charlemaznable.logback.dendrobe.es.EsClientManager;
 import com.github.charlemaznable.logback.dendrobe.es.EsClientManagerListener;
@@ -32,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListener {
+public class EsAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener, EsClientManagerListener {
 
     private static final String CLASS_NAME = EsAppenderTest.class.getName();
 
@@ -44,7 +43,9 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
     private static final String ELASTICSEARCH_USERNAME = "elastic";
     private static final String ELASTICSEARCH_PASSWORD = "changeme";
 
-    private static ElasticsearchContainer elasticsearch;
+    private static final ElasticsearchContainer elasticsearch
+            = new ElasticsearchContainer(ELASTICSEARCH_IMAGE)
+            .withPassword(ELASTICSEARCH_PASSWORD);
 
     private static ElasticsearchClient esClient;
 
@@ -57,9 +58,6 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
     @SneakyThrows
     @BeforeAll
     public static void beforeAll() {
-        EtcdConfigService.setUpTestMode();
-        elasticsearch = new ElasticsearchContainer(ELASTICSEARCH_IMAGE)
-                .withPassword(ELASTICSEARCH_PASSWORD);
         elasticsearch.start();
 
         val esConfig = new EsConfig();
@@ -81,7 +79,6 @@ public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListe
     public static void afterAll() {
         closeElasticsearchApiClient(esClient);
         elasticsearch.stop();
-        EtcdConfigService.tearDownTestMode();
     }
 
     @Test

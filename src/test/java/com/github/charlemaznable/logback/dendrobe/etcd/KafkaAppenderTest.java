@@ -1,6 +1,5 @@
 package com.github.charlemaznable.logback.dendrobe.etcd;
 
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
 import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
 import com.github.charlemaznable.logback.dendrobe.kafka.KafkaClientManager;
 import com.github.charlemaznable.logback.dendrobe.kafka.KafkaClientManagerListener;
@@ -32,13 +31,13 @@ import static com.github.charlemaznable.core.kafka.KafkaConfigElf.KAFKA_CONFIG_E
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManagerListener {
+public class KafkaAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener, KafkaClientManagerListener {
 
     private static final String CLASS_NAME = KafkaAppenderTest.class.getName();
 
     private static final DockerImageName KAFKA_IMAGE = DockerImageName.parse("confluentinc/cp-kafka:6.2.1");
 
-    static KafkaContainer kafka;
+    static KafkaContainer kafka = new KafkaContainer(KAFKA_IMAGE);
 
     private static KafkaProducer<String, String> kafkaProducer;
     private static KafkaConsumer<String, String> kafkaConsumer;
@@ -51,8 +50,6 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
 
     @BeforeAll
     public static void beforeAll() {
-        EtcdConfigService.setUpTestMode();
-        kafka = new KafkaContainer(KAFKA_IMAGE);
         kafka.start();
         val bootstrapServers = kafka.getBootstrapServers();
 
@@ -78,7 +75,6 @@ public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManage
         kafkaProducer.close();
         kafkaConsumer.close();
         kafka.stop();
-        EtcdConfigService.tearDownTestMode();
     }
 
     @Test

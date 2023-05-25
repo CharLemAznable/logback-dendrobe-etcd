@@ -1,7 +1,6 @@
 package com.github.charlemaznable.logback.dendrobe.etcd;
 
 import com.github.charlemaznable.eql.etcd.Etql;
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
 import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
 import com.github.charlemaznable.logback.dendrobe.etcd.log.ErrorLog;
 import com.github.charlemaznable.logback.dendrobe.etcd.log.NotLog;
@@ -24,7 +23,7 @@ import java.util.Properties;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EqlAppenderTest implements EtcdUpdaterListener {
+public class EqlAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener {
 
     private static final String CLASS_NAME = EqlAppenderTest.class.getName();
 
@@ -41,15 +40,13 @@ public class EqlAppenderTest implements EtcdUpdaterListener {
     private static final String SELECT_SIMPLE_LOGS = "" +
             "select log_id, log_content, log_date, log_date_time from simple_log order by log_id";
     private static final DockerImageName mysqlImageName = DockerImageName.parse("mysql:5.7.34");
-    private static MySQLContainer<?> mysql0;
+    private static final MySQLContainer<?> mysql0 = new MySQLContainer<>(mysqlImageName).withDatabaseName(DB0);
     private static Logger root;
     private static Logger self;
     private boolean updated;
 
     @BeforeAll
     public static void beforeAll() {
-        EtcdConfigService.setUpTestMode();
-        mysql0 = new MySQLContainer<>(mysqlImageName).withDatabaseName(DB0);
         mysql0.start();
 
         EmbeddedEtcdCluster.addOrModifyProperty("EqlConfig", DB0, "" +
@@ -66,7 +63,6 @@ public class EqlAppenderTest implements EtcdUpdaterListener {
 
     @AfterAll
     public static void afterAll() {
-        EtcdConfigService.tearDownTestMode();
         mysql0.stop();
     }
 
