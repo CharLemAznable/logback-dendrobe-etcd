@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EsAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener, EsClientManagerListener {
+public class EsAppenderTest implements EtcdUpdaterListener, EsClientManagerListener {
 
     private static final String CLASS_NAME = EsAppenderTest.class.getName();
 
@@ -60,6 +60,8 @@ public class EsAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener, 
     public static void beforeAll() {
         elasticsearch.start();
 
+        MockEtcdServer.setUpMockServer();
+
         val esConfig = new EsConfig();
         esConfig.setUris(newArrayList(elasticsearch.getHttpHostAddress()));
         esConfig.setUsername(ELASTICSEARCH_USERNAME);
@@ -78,6 +80,7 @@ public class EsAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener, 
     @AfterAll
     public static void afterAll() {
         closeElasticsearchApiClient(esClient);
+        MockEtcdServer.tearDownMockServer();
         elasticsearch.stop();
     }
 

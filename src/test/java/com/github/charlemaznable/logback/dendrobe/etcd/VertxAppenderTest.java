@@ -26,7 +26,7 @@ import static com.github.charlemaznable.core.vertx.VertxOptionsConfigElf.VERTX_O
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class VertxAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener, VertxManagerListener {
+public class VertxAppenderTest implements EtcdUpdaterListener, VertxManagerListener {
 
     private static final String CLASS_NAME = VertxAppenderTest.class.getName();
 
@@ -40,6 +40,7 @@ public class VertxAppenderTest extends EtcdTestEnv implements EtcdUpdaterListene
 
     @BeforeAll
     public static void beforeAll() {
+        MockEtcdServer.setUpMockServer();
         val vertxOptions = new VertxOptions();
         vertxOptions.setWorkerPoolSize(10);
         val hazelcastConfig = new Config();
@@ -62,6 +63,7 @@ public class VertxAppenderTest extends EtcdTestEnv implements EtcdUpdaterListene
     @AfterAll
     public static void afterAll() {
         VertxElf.closeVertx(vertx);
+        MockEtcdServer.tearDownMockServer();
     }
 
     @Test

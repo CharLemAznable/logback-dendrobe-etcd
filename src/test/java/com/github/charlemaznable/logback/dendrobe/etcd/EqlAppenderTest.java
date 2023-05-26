@@ -23,7 +23,7 @@ import java.util.Properties;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EqlAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener {
+public class EqlAppenderTest implements EtcdUpdaterListener {
 
     private static final String CLASS_NAME = EqlAppenderTest.class.getName();
 
@@ -49,6 +49,7 @@ public class EqlAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener 
     public static void beforeAll() {
         mysql0.start();
 
+        MockEtcdServer.setUpMockServer();
         MockEtcdServer.addOrModifyProperty("EqlConfig", DB0, "" +
                 "driver=com.mysql.cj.jdbc.Driver\n" +
                 "url=" + mysql0.getJdbcUrl() + "\n" +
@@ -63,6 +64,7 @@ public class EqlAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener 
 
     @AfterAll
     public static void afterAll() {
+        MockEtcdServer.tearDownMockServer();
         mysql0.stop();
     }
 

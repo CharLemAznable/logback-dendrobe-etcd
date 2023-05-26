@@ -31,7 +31,7 @@ import static com.github.charlemaznable.core.kafka.KafkaConfigElf.KAFKA_CONFIG_E
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class KafkaAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener, KafkaClientManagerListener {
+public class KafkaAppenderTest implements EtcdUpdaterListener, KafkaClientManagerListener {
 
     private static final String CLASS_NAME = KafkaAppenderTest.class.getName();
 
@@ -66,12 +66,15 @@ public class KafkaAppenderTest extends EtcdTestEnv implements EtcdUpdaterListene
         kafkaConsumer = buildConsumer(consumerConfig);
         kafkaConsumer.assign(Collections.singleton(new TopicPartition("logback.etcd", 0)));
 
+        MockEtcdServer.setUpMockServer();
+
         root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         self = LoggerFactory.getLogger(KafkaAppenderTest.class);
     }
 
     @AfterAll
     public static void afterAll() {
+        MockEtcdServer.tearDownMockServer();
         kafkaProducer.close();
         kafkaConsumer.close();
         kafka.stop();
