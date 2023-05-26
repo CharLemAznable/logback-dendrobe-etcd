@@ -5,7 +5,7 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.elasticsearch.indices.OpenRequest;
 import com.github.charlemaznable.core.es.EsConfig;
-import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 import com.github.charlemaznable.logback.dendrobe.es.EsClientManager;
 import com.github.charlemaznable.logback.dendrobe.es.EsClientManagerListener;
 import lombok.SneakyThrows;
@@ -88,11 +88,11 @@ public class EsAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener, 
 
         updated = false;
         configured = false;
-        EmbeddedEtcdCluster.addOrModifyProperty(ES_CONFIG_ETCD_NAMESPACE, "DEFAULT", "" +
+        MockEtcdServer.addOrModifyProperty(ES_CONFIG_ETCD_NAMESPACE, "DEFAULT", "" +
                 "uris=" + elasticsearch.getHttpHostAddress() + "\n" +
                 "username=" + ELASTICSEARCH_USERNAME + "\n" +
                 "password=" + ELASTICSEARCH_PASSWORD + "\n");
-        EmbeddedEtcdCluster.addOrModifyProperty("Logback", "test", "" +
+        MockEtcdServer.addOrModifyProperty("Logback", "test", "" +
                 "root[console.level]=info\n" +
                 CLASS_NAME + "[appenders]=[es]\n" +
                 CLASS_NAME + "[es.level]=info\n" +

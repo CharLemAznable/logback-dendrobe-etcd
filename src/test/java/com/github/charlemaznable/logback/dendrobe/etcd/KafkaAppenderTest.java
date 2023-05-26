@@ -1,6 +1,6 @@
 package com.github.charlemaznable.logback.dendrobe.etcd;
 
-import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 import com.github.charlemaznable.logback.dendrobe.kafka.KafkaClientManager;
 import com.github.charlemaznable.logback.dendrobe.kafka.KafkaClientManagerListener;
 import lombok.val;
@@ -84,9 +84,9 @@ public class KafkaAppenderTest extends EtcdTestEnv implements EtcdUpdaterListene
 
         updated = false;
         configured = false;
-        EmbeddedEtcdCluster.addOrModifyProperty(KAFKA_CONFIG_ETCD_NAMESPACE, "DEFAULT",
+        MockEtcdServer.addOrModifyProperty(KAFKA_CONFIG_ETCD_NAMESPACE, "DEFAULT",
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG + "=" + kafka.getBootstrapServers() + "\n");
-        EmbeddedEtcdCluster.addOrModifyProperty("Logback", "test", "" +
+        MockEtcdServer.addOrModifyProperty("Logback", "test", "" +
                 "root[console.level]=info\n" +
                 CLASS_NAME + "[appenders]=[kafka]\n" +
                 CLASS_NAME + "[kafka.level]=info\n" +

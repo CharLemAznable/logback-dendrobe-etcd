@@ -1,7 +1,7 @@
 package com.github.charlemaznable.logback.dendrobe.etcd;
 
 import com.github.charlemaznable.eql.etcd.Etql;
-import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 import com.github.charlemaznable.logback.dendrobe.etcd.log.ErrorLog;
 import com.github.charlemaznable.logback.dendrobe.etcd.log.NotLog;
 import com.github.charlemaznable.logback.dendrobe.etcd.log.SimpleLog;
@@ -49,7 +49,7 @@ public class EqlAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener 
     public static void beforeAll() {
         mysql0.start();
 
-        EmbeddedEtcdCluster.addOrModifyProperty("EqlConfig", DB0, "" +
+        MockEtcdServer.addOrModifyProperty("EqlConfig", DB0, "" +
                 "driver=com.mysql.cj.jdbc.Driver\n" +
                 "url=" + mysql0.getJdbcUrl() + "\n" +
                 "user=" + mysql0.getUsername() + "\n" +
@@ -72,7 +72,7 @@ public class EqlAppenderTest extends EtcdTestEnv implements EtcdUpdaterListener 
 
         updated = false;
         val sql = "insert into simple_log (log_id,log_content,log_date,log_date_time) values(#event.westId#,concat('(', #property.miner#, '|', ifnull(#mdc.tenantId#, ''), '|', ifnull(#mdc.tenantCode#, ''), ')', #event.message#, #event.exception#),current_timestamp(),current_timestamp())";
-        EmbeddedEtcdCluster.addOrModifyProperty("Logback", "test", "" +
+        MockEtcdServer.addOrModifyProperty("Logback", "test", "" +
                 "context.property[miner]=test\n" +
                 "root[eql.level]=info\n" +
                 "root[eql.connection]=\n" +

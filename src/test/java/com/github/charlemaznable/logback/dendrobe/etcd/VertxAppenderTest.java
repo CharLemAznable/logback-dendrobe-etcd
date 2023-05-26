@@ -1,8 +1,7 @@
 package com.github.charlemaznable.logback.dendrobe.etcd;
 
 import com.github.charlemaznable.core.vertx.VertxElf;
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
-import com.github.charlemaznable.etcdconf.test.EmbeddedEtcdCluster;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 import com.github.charlemaznable.logback.dendrobe.vertx.VertxManager;
 import com.github.charlemaznable.logback.dendrobe.vertx.VertxManagerListener;
 import com.hazelcast.config.Config;
@@ -72,18 +71,18 @@ public class VertxAppenderTest extends EtcdTestEnv implements EtcdUpdaterListene
 
         updated = false;
         configured = false;
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_CLUSTER_CONFIG_ETCD_NAMESPACE, "DEFAULT", """
+        MockEtcdServer.addOrModifyProperty(VERTX_CLUSTER_CONFIG_ETCD_NAMESPACE, "DEFAULT", """
                 hazelcast:
                   network:
                     join:
                       multicast:
                         enabled: true
                 """);
-        EmbeddedEtcdCluster.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "DEFAULT", """
+        MockEtcdServer.addOrModifyProperty(VERTX_OPTIONS_ETCD_NAMESPACE, "DEFAULT", """
                 workerPoolSize=42
                 clusterManager=@com.github.charlemaznable.core.vertx.cluster.impl.EtcdHazelcastClusterManager(DEFAULT)
                 """);
-        EmbeddedEtcdCluster.addOrModifyProperty("Logback", "test", "" +
+        MockEtcdServer.addOrModifyProperty("Logback", "test", "" +
                 "root[console.level]=info\n" +
                 CLASS_NAME + "[appenders]=[vertx]\n" +
                 CLASS_NAME + "[vertx.level]=info\n" +

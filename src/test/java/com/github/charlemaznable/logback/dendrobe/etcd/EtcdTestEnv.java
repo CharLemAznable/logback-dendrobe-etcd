@@ -1,10 +1,10 @@
 package com.github.charlemaznable.logback.dendrobe.etcd;
 
-import com.github.charlemaznable.etcdconf.EtcdConfigService;
+import com.github.charlemaznable.etcdconf.MockEtcdServer;
 
 public class EtcdTestEnv {
 
     static {
-        EtcdConfigService.setUpTestMode();
+        MockEtcdServer.setUpMockServer();
     }
 }
