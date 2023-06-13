@@ -25,7 +25,13 @@
 
 ##### Maven Dependency
 
-待发布.
+```xml
+<dependency>
+  <groupId>com.github.charlemaznable</groupId>
+  <artifactId>logback-dendrobe-etcd</artifactId>
+  <version>2023.2.0</version>
+</dependency>
+```
 
 ##### Maven Dependency SNAPSHOT
 
