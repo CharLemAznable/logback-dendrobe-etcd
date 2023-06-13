@@ -33,7 +33,7 @@
 <dependency>
   <groupId>com.github.charlemaznable</groupId>
   <artifactId>logback-dendrobe-etcd</artifactId>
-  <version>2023.1.2-SNAPSHOT</version>
+  <version>2023.2.1-SNAPSHOT</version>
 </dependency>
 ```
 
