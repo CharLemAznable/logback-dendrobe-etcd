@@ -7,7 +7,7 @@ import com.google.auto.service.AutoService;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.val;
-import org.slf4j.helpers.Util;
+import org.slf4j.helpers.Reporter;
 
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,7 +38,7 @@ public final class EtcdUpdater implements HotUpdater {
                     try {
                         listener.acceptEtcdValueProperties(properties);
                     } catch (Exception t) {
-                        Util.report("listener error:", t);
+                        Reporter.error("listener error:", t);
                     }
                 }
             }
